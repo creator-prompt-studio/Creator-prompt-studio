@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CreatorPrompt Studio — YouTube &amp; Instagram Prompt Generator</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-up {
+      animation: fadeSlideUp 0.25s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-violet-500/30 selection:text-violet-200">
+  <!-- Top Navigation -->
+  <header class="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-rose-500 flex items-center justify-center shadow-lg shadow-violet-500/20 shrink-0">
+          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div class="truncate">
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-white truncate">CreatorPrompt Studio</h1>
+          <p class="text-xs text-slate-400 hidden sm:block">YouTube &amp; Instagram Video Prompt Generator</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btn-plan-status" type="button" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-emerald-500/35 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-colors flex items-center gap-1.5">
+          <span id="plan-pill-icon">🎁</span>
+          <span id="plan-pill-text">1st Month Free</span>
+        </button>
+        <nav class="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0" aria-label="View switch">
+          <button id="tab-generator" type="button" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all bg-violet-600 text-white shadow-sm">
+            Generator
+          </button>
+          <button id="tab-saved" type="button" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white flex items-center gap-1.5">
+            <span>Saved</span>
+            <span id="saved-count-badge" class="px-1.5 py-0.5 text-[11px] font-semibold rounded-full bg-slate-800 text-slate-300">0</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <!-- GENERATOR VIEW -->
+    <div id="view-generator" class="space-y-6">
+      <!-- Trial & Subscription Banner -->
+      <div id="plan-banner" class="rounded-2xl bg-gradient-to-r from-violet-950/70 via-slate-900/90 to-fuchsia-950/60 border border-violet-500/30 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-start sm:items-center gap-3">
+          <span id="banner-icon" class="text-xl leading-none mt-0.5 sm:mt-0">🎁</span>
+          <div>
+            <p id="banner-title" class="text-sm font-semibold text-white">1st Month Free Trial Active — 30 days remaining</p>
+            <p id="banner-subtitle" class="text-xs text-slate-300">Enjoy full access for ₹0 in Month 1. From Month 2 onwards, subscription is ₹150/month.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="btn-open-pricing" type="button" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors shadow-sm">
+            Manage Plan
+          </button>
+        </div>
+      </div>
+      <!-- Controls & Category Picker -->
+      <section class="rounded-2xl bg-slate-900/70 border border-slate-800/90 p-4 sm:p-6 shadow-xl space-y-6">
+        <!-- Category Header + Search -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-violet-400">1. Choose Your Topic</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Pick from 15 creator categories or hit Surprise Me</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1 sm:w-52">
+              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+              </svg>
+              <input id="category-search" type="text" placeholder="Filter topics..." class="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-950/80 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+            </div>
+            <button id="btn-surprise" type="button" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 transition-colors shrink-0 flex items-center gap-1.5">
+              <span>🎲</span>
+              <span>Surprise</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 15 Categories Grid -->
+        <div id="category-grid" class="flex flex-wrap gap-2"></div>
+
+        <!-- Divider -->
+        <div class="border-t border-slate-800/80"></div>
+
+        <!-- Platform, Tone, Format & Custom Twist -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Platform -->
+          <div class="space-y-2">
+            <label for="select-platform" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">2. Platform</label>
+            <select id="select-platform" class="w-full px-3.5 py-2.5 text-sm bg-slate-950/90 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-violet-500 transition-colors">
+              <option value="yt-shorts">YouTube Shorts (Vertical &lt; 60s)</option>
+              <option value="ig-reels">Instagram Reels (Trending / Hook-first)</option>
+              <option value="yt-long">YouTube Long-Form (Storytelling / Deep)</option>
+              <option value="ig-story">Instagram Story / Carousel Post</option>
+            </select>
+          </div>
+
+          <!-- Tone -->
+          <div class="space-y-2">
+            <label for="select-tone" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">3. Vibe &amp; Tone</label>
+            <select id="select-tone" class="w-full px-3.5 py-2.5 text-sm bg-slate-950/90 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-violet-500 transition-colors">
+              <option value="cinematic">Cinematic &amp; Deep</option>
+              <option value="punchy">High-Energy &amp; Punchy</option>
+              <option value="raw">Raw &amp; Emotional</option>
+              <option value="warm">Warm &amp; Aesthetic</option>
+              <option value="story">Storytime &amp; Conversational</option>
+            </select>
+          </div>
+
+          <!-- Output Focus -->
+          <div class="space-y-2">
+            <label for="select-mode" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">4. Prompt Focus</label>
+            <select id="select-mode" class="w-full px-3.5 py-2.5 text-sm bg-slate-950/90 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-violet-500 transition-colors">
+              <option value="all">All-in-One Creator Pack</option>
+              <option value="script">Hook &amp; Video Script Only</option>
+              <option value="visual">AI Video / B-Roll Visual Prompt</option>
+              <option value="caption">Caption &amp; Hashtags Only</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Optional Custom Context + Generate Action -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 pt-1">
+          <div class="flex-1 space-y-1.5">
+            <label for="custom-twist" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Optional Twist or Keyword</label>
+            <input id="custom-twist" type="text" maxlength="80" placeholder="e.g., 5 AM gym session, moving to a new city, exam comeback..." class="w-full px-3.5 py-2.5 text-sm bg-slate-950/90 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors" />
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button id="btn-generate" type="button" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-600/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span>Generate Prompt</span>
+            </button>
+            <button id="btn-shuffle" type="button" title="Next variation" class="px-3.5 py-2.5 rounded-xl text-sm font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all active:scale-[0.98] flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span class="hidden sm:inline">Shuffle</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Generated Output Card -->
+      <section id="output-section" class="rounded-2xl bg-slate-900/80 border border-slate-800 p-4 sm:p-6 shadow-xl space-y-5 animate-fade-up">
+        <!-- Output Header -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="out-category-pill" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-violet-500/15 text-violet-300 border border-violet-500/30"></span>
+            <span id="out-platform-pill" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700"></span>
+            <span id="out-tone-pill" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700"></span>
+            <span id="out-variation-pill" class="text-xs text-slate-500 font-medium"></span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="btn-save-prompt" type="button" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium border border-slate-700 bg-slate-800/90 hover:bg-slate-700 text-slate-200 transition-colors flex items-center gap-1.5">
+              <svg id="save-heart-icon" class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <span id="save-btn-text">Save</span>
+            </button>
+            <button id="btn-copy-all" type="button" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1.5 shadow-sm">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span>Copy Full Pack</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Blocks -->
+        <div id="output-blocks" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+
+        <!-- Recent History Strip -->
+        <div id="history-container" class="hidden pt-2 border-t border-slate-800/80">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Recent Prompts</span>
+            <button id="btn-clear-history" type="button" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">Clear</button>
+          </div>
+          <div id="history-strip" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SAVED VIEW -->
+    <div id="view-saved" class="hidden space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white">Saved Creator Prompts</h2>
+          <p class="text-xs sm:text-sm text-slate-400">Your bookmarked hooks, AI video prompts, and captions</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-export-saved" type="button" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>Export .txt</span>
+          </button>
+          <button id="btn-clear-saved" type="button" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-colors">
+            Clear All
+          </button>
+        </div>
+      </div>
+
+      <div id="saved-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </main>
+
+  <!-- Subscription & Trial Modal -->
+  <div id="plan-modal" class="hidden fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-700/90 shadow-2xl p-5 sm:p-6 space-y-5">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-violet-500/15 text-violet-300 border border-violet-500/30">
+            CreatorPass Plan
+          </span>
+          <h2 class="text-lg font-bold text-white mt-2">1st Month Free, Then ₹150/month</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Unlock unlimited YouTube &amp; Instagram prompts across all 15 categories.</p>
+        </div>
+        <button id="btn-close-modal" type="button" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" aria-label="Close modal">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Pricing Breakdown -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3.5 space-y-1">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-emerald-300">Month 1 (Trial)</p>
+          <p class="text-2xl font-extrabold text-white">₹0</p>
+          <p class="text-xs text-slate-300">30-day full access</p>
+        </div>
+        <div class="rounded-xl bg-slate-950/80 border border-slate-800 p-3.5 space-y-1">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-violet-300">Month 2 Onwards</p>
+          <p class="text-2xl font-extrabold text-white">₹150<span class="text-xs font-medium text-slate-400">/mo</span></p>
+          <p class="text-xs text-slate-400">Cancel anytime</p>
+        </div>
+      </div>
+
+      <!-- Current Status Box -->
+      <div id="modal-status-box" class="rounded-xl bg-slate-950/70 border border-slate-800 p-3.5 text-xs text-slate-300 space-y-1"></div>
+
+      <!-- Payment Method (shown when subscribing) -->
+      <div id="modal-payment-wrap" class="space-y-2">
+        <label for="select-payment" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Payment Method (for ₹150/mo after trial)</label>
+        <select id="select-payment" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-violet-500">
+          <option value="upi">UPI (GPay / PhonePe / Paytm)</option>
+          <option value="card">Debit / Credit Card</option>
+          <option value="netbanking">NetBanking</option>
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-col gap-2 pt-1">
+        <button id="btn-subscribe-now" type="button" class="w-full py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-600/25 transition-all">
+          Subscribe Now — ₹150/month
+        </button>
+        <div class="flex items-center gap-2">
+          <button id="btn-simulate-trial-end" type="button" class="flex-1 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
+            Preview Month 2 (Trial Ended)
+          </button>
+          <button id="btn-reset-trial" type="button" class="flex-1 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
+            Reset 1st Month Trial
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200">
+    <div class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-sm font-medium shadow-2xl flex items-center gap-2">
+      <span id="toast-icon">✅</span>
+      <span id="toast-msg">Copied!</span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const CATEGORIES = [
+        {
+          id: 'motivation',
+          name: 'Motivation',
+          emoji: '🔥',
+          tags: '#motivation #mindset #dailygrind #nevergiveup #discipline',
+          hooks: [
+            'Stop waiting for Monday. The version of you that wins starts right now.',
+            'Nobody is coming to save you—and that is actually your greatest superpower.',
+            'Six months of pure focus can put you five years ahead in life.',
+            'You are not tired; you are just uninspired by a routine that is too small for you.'
+          ],
+          bodies: [
+            'Break the goal into one non-negotiable 30-minute block today. No announcements, no excuses—just stack one quiet win before tonight.',
+            'Every person you admire once stood at day one feeling unqualified. The only difference is they kept showing up when the excitement faded.',
+            'Trade one hour of scrolling for one hour of building. Do that for 90 days and watch your entire life shift.'
+          ],
+          visuals: [
+            'Golden-hour sunrise over an empty city street, slow-motion silhouette walking forward, warm amber rim lighting, shallow depth of field, 4K cinematic.',
+            'Close-up of hands lacing running shoes at dawn, moody blue-to-amber color grade, crisp focus, dynamic tracking shot.',
+            'Wide shot of a lone creator working at a clean desk by a rainy window, warm desk lamp glow, cinematic film grain.'
+          ],
+          ctas: [
+            'Save this for the days you feel like quitting. Comment "DAY 1" if you are locking in.',
+            'Send this to someone who needs a reminder of how capable they really are.'
+          ]
+        },
+        {
+          id: 'positive-quotes',
+          name: 'Positive Quotes',
+          emoji: '✨',
+          tags: '#positivequotes #goodvibes #mindfulness #positivity #dailyaffirmation',
+          hooks: [
+            'A gentle reminder you did not know you needed today:',
+            'Read this twice before you let today’s stress steal your peace:',
+            'What is meant for you will never require you to lose yourself to keep it.',
+            'Good things are quietly lining up for you—even if you cannot see them yet.'
+          ],
+          bodies: [
+            'Slow down, unclench your jaw, and trust the pace of your own journey. You have survived 100% of your hardest days so far.',
+            'Not every closed door is a rejection; sometimes it is protection guiding you toward something softer and brighter.',
+            'Speak to yourself today the way you would speak to someone you deeply love.'
+          ],
+          visuals: [
+            'Sunlight filtering through green leaves in a quiet garden, soft bokeh, gentle breeze, warm pastel aesthetic, 60fps smooth.',
+            'Steaming ceramic mug on a wooden table beside an open journal, soft morning window light, calm minimal aesthetic.',
+            'Calm ocean waves rolling onto golden sand at sunset, dreamy lens flare, serene slow motion.'
+          ],
+          ctas: [
+            'Type "I claim this" in the comments if this reached you at the right moment.',
+            'Share this on your story to pass a little light to someone else today.'
+          ]
+        },
+        {
+          id: 'love',
+          name: 'Love',
+          emoji: '❤️',
+          tags: '#love #truelove #relationshipgoals #romance #couples',
+          hooks: [
+            'Real love is not loud—it is how safe your nervous system feels around them.',
+            'You know you found the right person when even silence feels like home.',
+            'Love is choosing the same person in a thousand tiny, unglamorous moments.',
+            'The greenest flag? Someone who protects your peace even when you are arguing.'
+          ],
+          bodies: [
+            'It is remembering how you take your coffee, checking if you got home safe, and making ordinary errands feel like a date.',
+            'Never settle for butterflies caused by anxiety when you can have the calm certainty of being genuinely cherished.',
+            'When both people try to out-care each other, love stops feeling like work and starts feeling like rest.'
+          ],
+          visuals: [
+            'Two hands intertwined walking down a lantern-lit street at dusk, warm bokeh lights, intimate handheld camera feel.',
+            'Couple laughing together in a cozy kitchen cooking dinner, warm tungsten lighting, candid documentary style.',
+            'Sunset silhouette of two people sitting on a car hood overlooking city lights, nostalgic 35mm film aesthetic.'
+          ],
+          ctas: [
+            'Tag the person who feels like home to you ❤️',
+            'Save this if you believe in soft, steady, intentional love.'
+          ]
+        },
+        {
+          id: 'sad',
+          name: 'Sad',
+          emoji: '🌧️',
+          tags: '#sadquotes #deepfeelings #heartache #healing #latenightthoughts',
+          hooks: [
+            'The hardest part is acting normal when your chest feels this heavy.',
+            'Sometimes you outgrow people you swore would be in your life forever.',
+            'It hurts differently when you gave someone your best and it still was not enough.',
+            'Nobody talks about how exhausting it is to miss a version of someone that no longer exists.'
+          ],
+          bodies: [
+            'You do not have to explain your silence to people who never listened to your words. Let yourself feel it without rushing the healing.',
+            'Some nights hit harder than others—and that does not mean you are weak, it means you cared deeply.',
+            'Grieving someone who is still alive is a quiet kind of pain, yet somehow you will still wake up and keep going.'
+          ],
+          visuals: [
+            'Raindrops streaking down a car window at night with blurred red taillights outside, moody cool blue tones, cinematic.',
+            'Empty park bench under misty streetlights at midnight, slow push-in shot, melancholic atmospheric lighting.',
+            'Person sitting alone by a window watching rain fall, soft desaturated slate palette, quiet poetic framing.'
+          ],
+          ctas: [
+            'If you are carrying something heavy tonight, drop a "🤍" — you are not alone.',
+            'Save this for the late-night thoughts you cannot put into words.'
+          ]
+        },
+        {
+          id: 'happiness',
+          name: 'Happiness',
+          emoji: '☀️',
+          tags: '#happiness #joy #simplejoys #grateful #goodenergy',
+          hooks: [
+            'Romanticize the tiny moments—because one day you will realize they were the big ones.',
+            'Happiness is not waiting at the finish line; it is hiding in your Tuesday afternoon.',
+            'Protect the things that make you laugh until your stomach hurts.',
+            'Here is your sign to stop postponing joy until everything is "perfect."'
+          ],
+          bodies: [
+            'Windows down with your favorite song, iced coffee in the sun, laughing with friends over nothing—this is the good stuff.',
+            'Once you stop comparing your chapter to someone else’s highlight reel, peace and joy show up almost immediately.',
+            'Do one small thing today purely because it makes your heart feel lighter.'
+          ],
+          visuals: [
+            'Bright sunlit road trip POV with wind in hair, vibrant warm colors, joyful energetic cuts, 4K summer vibe.',
+            'Friends laughing around an outdoor cafe table with golden afternoon light, candid handheld motion.',
+            'Sunlight sparkling on clear blue water with wildflowers swaying in the foreground, uplifting vibrant palette.'
+          ],
+          ctas: [
+            'What is one small thing that made you smile today? Tell me below ☀️',
+            'Send this to your favorite person to remind them to smile today!'
+          ]
+        },
+        {
+          id: 'breakup',
+          name: 'Breakup',
+          emoji: '💔',
+          tags: '#breakup #movingon #healingjourney #heartbreak #letgo',
+          hooks: [
+            'You did not lose them; you were returned to yourself.',
+            'Closure is not a text from them—closure is realizing you deserve better.',
+            'One day you will look back and thank yourself for not begging to be chosen.',
+            'It hurts right now because your heart is making room for something real.'
+          ],
+          bodies: [
+            'Stop rereading old messages looking for the person you fell for. Respect the goodbye and pour every ounce of that love back into your own life.',
+            'Missing them does not mean you should go back. It just means your nervous system is adjusting to peace after chaos.',
+            'Delete the thread, block the noise if you have to, and choose your future self over a familiar hurt.'
+          ],
+          visuals: [
+            'Person walking away along an empty coastal boardwalk at dawn, cool mist turning into warm sunrise, symbolic cinematic shot.',
+            'Hand gently closing a notebook and setting it aside on a wooden desk, soft window light, calm minimalist tone.',
+            'Nighttime city skyline from a rooftop, person taking a deep breath looking forward, moody teal-and-amber grade.'
+          ],
+          ctas: [
+            'Save this every time you feel tempted to reach back out.',
+            'Comment "MOVING ON" if you are choosing your peace this month.'
+          ]
+        },
+        {
+          id: 'failures',
+          name: 'Failures',
+          emoji: '📉',
+          tags: '#failure #comeback #resilience #lessonslearned #growthmindset',
+          hooks: [
+            'That failure you are embarrassed about? It is the exact plot twist that builds your comeback.',
+            'You did not fail—you just found a strategy that did not work yet.',
+            'Everyone wants the success story, nobody wants the awkward chapter where nothing works.',
+            'Losing once does not make you a failure; quitting after one loss does.'
+          ],
+          bodies: [
+            'Audit what went wrong without attacking who you are. Keep the lesson, drop the shame, and step back up with sharper aim.',
+            'Most overnight successes are built on ten quiet attempts nobody clapped for. Keep refining your craft in private.',
+            'Rejection is just data. Use it to rebuild stronger than before.'
+          ],
+          visuals: [
+            'Close-up of crumpled paper on a desk, hand smoothing out a fresh blank page and starting to write, dramatic side lighting.',
+            'Athlete catching their breath on an empty track under stadium lights, gritty high-contrast sports documentary look.',
+            'Rainy night workshop with a single spotlight over a workbench, determined expression, cinematic contrast.'
+          ],
+          ctas: [
+            'Save this for your comeback era. What did your biggest setback teach you?',
+            'Tag a friend who is rebuilding right now—they need this.'
+          ]
+        },
+        {
+          id: 'workouts',
+          name: 'Workouts',
+          emoji: '🏋️',
+          tags: '#workout #fitnessmotivation #gymrat #training #consistency',
+          hooks: [
+            'The hardest lift in the gym is getting through the front door on the days you feel lazy.',
+            'Do not train just to look good—train so your mind knows you do not quit when things get heavy.',
+            'No one cares about your excuses when the weights are on the bar.',
+            'Forty-five minutes of effort today will change your entire mood for the next 24 hours.'
+          ],
+          bodies: [
+            'Drop the ego weight, lock in your form, and push those last three reps where the real growth happens.',
+            'Motivation gets you started for a week; a simple split and a non-negotiable schedule builds the physique.',
+            'Hydrate, warm up properly, and beat yesterday’s version of yourself by just 1%.'
+          ],
+          visuals: [
+            'Dramatic overhead gym lighting, chalk dust floating in the air around a barbell, crisp slow-motion 4K.',
+            'Fast-paced dynamic cuts of kettlebell swings, box jumps, and sprints, high-contrast dark gym aesthetic.',
+            'Early morning runner sprinting up an incline bridge with city skyline behind, energetic tracking shot.'
+          ],
+          ctas: [
+            'Drop your workout split in the comments 💪 Let’s hold each other accountable.',
+            'Save this for your next pre-workout mindset boost!'
+          ]
+        },
+        {
+          id: 'self-motivation',
+          name: 'Self Motivation',
+          emoji: '🧠',
+          tags: '#selfmotivation #selfdiscipline #personaldevelopment #habits #focus',
+          hooks: [
+            'Keep the promises you make to yourself when nobody is watching.',
+            'Self-respect is built in the quiet moments when you choose discipline over comfort.',
+            'Stop negotiating with your goals just because you feel unmotivated today.',
+            'You do not need another pep talk—you need a system that works on your worst days.'
+          ],
+          bodies: [
+            'Set your alarm across the room, lay out your clothes tonight, and make the right choice the easiest choice tomorrow morning.',
+            'When you consistently follow through on small commitments, your confidence stops depending on external validation.',
+            'Silence the noise, pick one priority for the next two hours, and finish what you started.'
+          ],
+          visuals: [
+            'Minimalist desk setup at 5:30 AM, coffee steam rising next to a clean checklist and laptop, calm focused aesthetic.',
+            'Person journaling quietly in morning sunlight before the city wakes up, crisp warm tones.',
+            'POV shot checking off a daily habit tracker with a fountain pen, satisfying shallow depth of field.'
+          ],
+          ctas: [
+            'What is ONE promise you are keeping to yourself today? Write it below.',
+            'Save this to reset your focus whenever you feel distracted.'
+          ]
+        },
+        {
+          id: 'empowerment',
+          name: 'Empowerment',
+          emoji: '⚡',
+          tags: '#empowerment #confidence #knowyourworth #strongmindset #levelup',
+          hooks: [
+            'Never shrink yourself just to make insecure people comfortable.',
+            'The moment you realize your worth, you stop giving discounts on your energy.',
+            'Walk into every room like you earned your seat—because you did.',
+            'Setting boundaries is not rude; it is how you teach people how to respect you.'
+          ],
+          bodies: [
+            'Stop apologizing for having high standards, big ambitions, and a voice you are no longer afraid to use.',
+            'You are allowed to outgrow rooms, roles, and relationships that no longer match who you are becoming.',
+            'Stand tall, speak clearly, and back yourself even when your voice shakes.'
+          ],
+          visuals: [
+            'Confident low-angle slow-motion walk down a modern glass corridor, crisp editorial lighting, bold cinematic framing.',
+            'Portrait shot with strong rim light, person looking directly into the lens with calm power, 85mm shallow depth of field.',
+            'Wide shot overlooking a city skyline from a high balcony at sunset, empowering golden light.'
+          ],
+          ctas: [
+            'Share this with someone who needs to remember their power today ⚡',
+            'Comment "NO MORE SHRINKING" if you are stepping into your confidence.'
+          ]
+        },
+        {
+          id: 'success',
+          name: 'Success',
+          emoji: '🏆',
+          tags: '#success #ambition #entrepreneurlife #goals #winningmindset',
+          hooks: [
+            'Success is rarely about luck—it is about boring consistency repeated for years.',
+            'Move in silence, let your results make all the noise.',
+            'If your circle does not talk about ideas, growth, or vision, you are in the wrong room.',
+            'Every big milestone starts as an idea people laughed at.'
+          ],
+          bodies: [
+            'Protect your mornings, learn a high-income skill, and track your numbers weekly. What gets measured gets mastered.',
+            'Do not envy someone’s lifestyle unless you are willing to adopt their daily work ethic and sacrifice.',
+            'Build something today that your future self five years from now will thank you for.'
+          ],
+          visuals: [
+            'Sleek evening workspace overlooking a glowing city skyline, laptop screen and espresso cup, luxury minimal aesthetic.',
+            'Time-lapse of city traffic lights streaming below a skyscraper, bold modern corporate-cinematic feel.',
+            'Clean B-roll of reviewing blueprints/analytics on a tablet in a sunlit studio, sharp editorial look.'
+          ],
+          ctas: [
+            'Save this for your vision board. What goal are you chasing this year?',
+            'Tag your accountability partner—let’s win together 🏆'
+          ]
+        },
+        {
+          id: 'family',
+          name: 'Family',
+          emoji: '🏡',
+          tags: '#family #familyfirst #gratitude #parents #home',
+          hooks: [
+            'We get so busy growing up that we forget our parents are growing old too.',
+            'Call home today—not because you need something, just to hear their voice.',
+            'At the end of the day, family is the anchor that holds when everything else shakes.',
+            'The richest moments in life happen around a crowded dinner table.'
+          ],
+          bodies: [
+            'Take the photo, record their laugh, and ask about their stories while you still can. Time moves faster than we think.',
+            'No matter how far you chase your dreams, remember the people who quietly prayed for you when you had nothing.',
+            'Make time this weekend for the people who knew you before the world did.'
+          ],
+          visuals: [
+            'Warm candid shot of family sharing a meal around a wooden table, golden tungsten light, nostalgic home-video warmth.',
+            'Close-up of an older parent’s hand holding a younger hand in sunlight, emotional documentary style.',
+            'Sunlit porch with laughter and movement in soft focus, warm Kodak film color grade.'
+          ],
+          ctas: [
+            'Send this to a family member and tell them you appreciate them 🏡❤️',
+            'Save this reminder to call home tonight.'
+          ]
+        },
+        {
+          id: 'boyfriend',
+          name: 'Boyfriend',
+          emoji: '💙',
+          tags: '#boyfriend #bfgoals #couplereels #appreciation #myfavoriteperson',
+          hooks: [
+            'Shoutout to the boyfriend who makes life feel lighter just by being in it.',
+            'To my boyfriend: thank you for being my safest place on hard days.',
+            'Here is what nobody tells you about dating a genuinely good guy:',
+            'He does not just say he loves you—you can see it in every small thing he does.'
+          ],
+          bodies: [
+            'From carrying the heavy bags to listening to my endless stories without checking his phone—it is the little things that mean everything.',
+            'Life is chaotic enough; having a partner who brings calm, humor, and loyalty is undefeated.',
+            'Appreciate your man out loud today—men rarely get the flowers they deserve while they are right here.'
+          ],
+          visuals: [
+            'Candid POV of boyfriend laughing in the passenger seat during a golden-hour drive, warm nostalgic vibe.',
+            'Playful clip of couple grabbing street food together at night, neon reflections, fun upbeat rhythm.',
+            'Cozy evening silhouette sharing headphones on a couch, soft warm lamp light.'
+          ],
+          ctas: [
+            'Tag your boyfriend to make his day 💙',
+            'Send this to your favorite guy right now!'
+          ]
+        },
+        {
+          id: 'girlfriend',
+          name: 'Girlfriend',
+          emoji: '🌸',
+          tags: '#girlfriend #gfappreciation #couplegoals #mylove #softlife',
+          hooks: [
+            'To the girlfriend who turns every ordinary day into my favorite memory:',
+            'When she is happy, the whole world feels brighter—and honestly, that is the goal.',
+            'Never stop dating your girlfriend, even after you have already won her heart.',
+            'The best investment? Making sure she always feels seen, heard, and adored.'
+          ],
+          bodies: [
+            'Bring her the random flowers, hype up her outfits, and listen when she vents without trying to "fix" everything right away.',
+            'A woman glows differently when she is loved with consistency, patience, and genuine effort.',
+            'Thank you for being my peace, my hype woman, and my favorite adventure.'
+          ],
+          visuals: [
+            'Girlfriend smiling back over her shoulder while holding a bouquet in afternoon sunlight, dreamy 35mm film look.',
+            'Cute coffee date clip across a sunlit cafe table, aesthetic warm tones, soft slow motion.',
+            'Evening walk holding hands under fairy lights, joyful candid laughter.'
+          ],
+          ctas: [
+            'Tag your girlfriend and remind her how lucky you are 🌸',
+            'Send this to your girl just because!'
+          ]
+        },
+        {
+          id: 'self-love',
+          name: 'Self Love',
+          emoji: '🌿',
+          tags: '#selflove #selfcare #healing #innerpeace #putyourselfirst',
+          hooks: [
+            'Self-love is not bubble baths—it is saying no without guilt.',
+            'Start treating yourself like someone you are responsible for taking care of.',
+            'You cannot pour from an empty cup. Rest is part of the work.',
+            'Fall in love with taking care of your mind, your body, and your peace.'
+          ],
+          bodies: [
+            'Take yourself out on a solo date, drink your water, unfollow accounts that make you feel inadequate, and protect your mornings.',
+            'You do not have to earn rest by burning out first. Listen to your body when it asks you to slow down.',
+            'The longest relationship you will ever have is the one with yourself—make it kind, honest, and gentle.'
+          ],
+          visuals: [
+            'Peaceful solo morning routine: pouring herbal tea, stretching by a sunlit window, soft sage and cream aesthetic.',
+            'Person taking a quiet solo walk through a tree-lined park with headphones on, serene natural light.',
+            'Close-up of writing gratitude notes in a linen journal beside fresh eucalyptus, calm minimal style.'
+          ],
+          ctas: [
+            'What is one way you are showing yourself love this week? 🌿',
+            'Save this as your reminder to protect your peace today.'
+          ]
+        }
+      ];
+
+      const PLATFORM_META = {
+        'yt-shorts': {
+          label: 'YouTube Shorts',
+          pacing: 'Fast 3s visual hook • 25–45s runtime • Bold on-screen captions',
+          formatTip: 'Keep text centered in the safe zone; loop the last sentence back into the hook.'
+        },
+        'ig-reels': {
+          label: 'Instagram Reels',
+          pacing: 'Aesthetic 2s hook • Trending audio sync • Save-worthy value',
+          formatTip: 'Use clean 2-line cover text and keep the caption scannable for higher saves/shares.'
+        },
+        'yt-long': {
+          label: 'YouTube Long-Form',
+          pacing: 'Strong 15s intro • Story arc + B-roll • High-retention pacing',
+          formatTip: 'Expand the body into 3 personal examples or chapters and pair with a curiosity-driven title.'
+        },
+        'ig-story': {
+          label: 'Instagram Story / Carousel',
+          pacing: 'Slide 1 punchy quote • Slides 2–4 breakdown • Final slide CTA',
+          formatTip: 'Use high-contrast typography on Slide 1 and add an interactive poll or question sticker.'
+        }
+      };
+
+      const TONE_META = {
+        cinematic: { label: 'Cinematic & Deep', styleNote: 'Slow pacing, atmospheric music, resonant voiceover' },
+        punchy: { label: 'High-Energy & Punchy', styleNote: 'Quick cuts, bold kinetic text, assertive delivery' },
+        raw: { label: 'Raw & Emotional', styleNote: 'Vulnerable, unpolished, intimate close-up framing' },
+        warm: { label: 'Warm & Aesthetic', styleNote: 'Soft lighting, gentle lo-fi/acoustic bed, cozy visuals' },
+        story: { label: 'Storytime & Conversational', styleNote: 'Direct-to-camera, relatable "talking to a friend" energy' }
+      };
+
+      const STORAGE_KEY = 'creator_prompt_studio_saved_v1';
+      const PLAN_STORAGE_KEY = 'creator_prompt_studio_plan_v1';
+
+      const state = {
+        selectedCategoryId: 'motivation',
+        searchQuery: '',
+        platform: 'yt-shorts',
+        tone: 'cinematic',
+        mode: 'all',
+        customTwist: '',
+        variationIndex: 0,
+        currentPrompt: null,
+        history: [],
+        saved: [],
+        activeTab: 'generator',
+        plan: {
+          status: 'trial', // 'trial' | 'expired' | 'subscribed'
+          trialDaysLeft: 30,
+          paymentMethod: 'upi'
+        }
+      };
+
+      // DOM elements
+      const elCategoryGrid = document.getElementById('category-grid');
+      const elCategorySearch = document.getElementById('category-search');
+      const elSelectPlatform = document.getElementById('select-platform');
+      const elSelectTone = document.getElementById('select-tone');
+      const elSelectMode = document.getElementById('select-mode');
+      const elCustomTwist = document.getElementById('custom-twist');
+      const elBtnGenerate = document.getElementById('btn-generate');
+      const elBtnShuffle = document.getElementById('btn-shuffle');
+      const elBtnSurprise = document.getElementById('btn-surprise');
+      const elOutputBlocks = document.getElementById('output-blocks');
+      const elOutCategoryPill = document.getElementById('out-category-pill');
+      const elOutPlatformPill = document.getElementById('out-platform-pill');
+      const elOutTonePill = document.getElementById('out-tone-pill');
+      const elOutVariationPill = document.getElementById('out-variation-pill');
+      const elBtnSavePrompt = document.getElementById('btn-save-prompt');
+      const elSaveHeartIcon = document.getElementById('save-heart-icon');
+      const elSaveBtnText = document.getElementById('save-btn-text');
+      const elBtnCopyAll = document.getElementById('btn-copy-all');
+      const elHistoryContainer = document.getElementById('history-container');
+      const elHistoryStrip = document.getElementById('history-strip');
+      const elBtnClearHistory = document.getElementById('btn-clear-history');
+      const elTabGenerator = document.getElementById('tab-generator');
+      const elTabSaved = document.getElementById('tab-saved');
+      const elViewGenerator = document.getElementById('view-generator');
+      const elViewSaved = document.getElementById('view-saved');
+      const elSavedCountBadge = document.getElementById('saved-count-badge');
+      const elSavedList = document.getElementById('saved-list');
+      const elBtnExportSaved = document.getElementById('btn-export-saved');
+      const elBtnClearSaved = document.getElementById('btn-clear-saved');
+      const elBtnPlanStatus = document.getElementById('btn-plan-status');
+      const elPlanPillIcon = document.getElementById('plan-pill-icon');
+      const elPlanPillText = document.getElementById('plan-pill-text');
+      const elPlanBanner = document.getElementById('plan-banner');
+      const elBannerIcon = document.getElementById('banner-icon');
+      const elBannerTitle = document.getElementById('banner-title');
+      const elBannerSubtitle = document.getElementById('banner-subtitle');
+      const elBtnOpenPricing = document.getElementById('btn-open-pricing');
+      const elPlanModal = document.getElementById('plan-modal');
+      const elBtnCloseModal = document.getElementById('btn-close-modal');
+      const elModalStatusBox = document.getElementById('modal-status-box');
+      const elSelectPayment = document.getElementById('select-payment');
+      const elBtnSubscribeNow = document.getElementById('btn-subscribe-now');
+      const elBtnSimulateTrialEnd = document.getElementById('btn-simulate-trial-end');
+      const elBtnResetTrial = document.getElementById('btn-reset-trial');
+      const elToast = document.getElementById('toast');
+      const elToastIcon = document.getElementById('toast-icon');
+      const elToastMsg = document.getElementById('toast-msg');
+
+      let toastTimer = null;
+
+      function showToast(msg, icon) {
+        elToastMsg.textContent = msg;
+        elToastIcon.textContent = icon || '✅';
+        elToast.classList.remove('opacity-0', 'translate-y-2');
+        elToast.classList.add('opacity-100', 'translate-y-0');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          elToast.classList.remove('opacity-100', 'translate-y-0');
+          elToast.classList.add('opacity-0', 'translate-y-2');
+        }, 2200);
+      }
+
+      function copyText(text, label) {
+        if (!text) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            showToast((label || 'Prompt') + ' copied!', '📋');
+          }).catch(function () {
+            fallbackCopy(text, label);
+          });
+        } else {
+          fallbackCopy(text, label);
+        }
+      }
+
+      function fallbackCopy(text, label) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast((label || 'Prompt') + ' copied!', '📋');
+        } catch (err) {
+          showToast('Could not copy automatically', '⚠️');
+        }
+        document.body.removeChild(ta);
+      }
+
+      function loadSaved() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) state.saved = parsed;
+          }
+        } catch (e) {
+          state.saved = [];
+        }
+      }
+
+      function persistSaved() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.saved));
+        } catch (e) {
+          // Ignore storage quota / sandbox restrictions
+        }
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function buildPromptData() {
+        const cat = CATEGORIES.find(function (c) { return c.id === state.selectedCategoryId; }) || CATEGORIES[0];
+        const plat = PLATFORM_META[state.platform];
+        const tone = TONE_META[state.tone];
+        const idx = state.variationIndex;
+
+        const hook = cat.hooks[idx % cat.hooks.length];
+        const body = cat.bodies[idx % cat.bodies.length];
+        const visualBase = cat.visuals[idx % cat.visuals.length];
+        const cta = cat.ctas[idx % cat.ctas.length];
+        const twist = state.customTwist.trim();
+
+        const twistLine = twist ? '\n\n[Personal Twist: "' + twist + '"] — Weave this angle directly into your opening visual and voiceover.' : '';
+        const scriptText =
+          'HOOK (0–3s):\n"' + hook + '"\n\n' +
+          'BODY:\n' + body + twistLine + '\n\n' +
+          'CTA:\n"' + cta + '"\n\n' +
+          'PACING NOTE (' + plat.label + '): ' + plat.pacing;
+
+        const visualPrompt =
+          visualBase +
+          (twist ? ' Incorporating theme: ' + twist + '.' : '') +
+          ' Style: ' + tone.styleNote + '. ' +
+          (state.platform === 'yt-long' ? '16:9 widescreen, cinematic 24fps.' : '9:16 vertical framing, crisp mobile-first composition.');
+
+        const platformTag = state.platform.startsWith('yt') ? '#youtubeshorts #youtube' : '#reels #instagramreels';
+        const captionText =
+          hook + '\n\n' +
+          (twist ? 'Focused on: ' + twist + '.\n' : '') +
+          cta + '\n\n' +
+          cat.tags + ' ' + platformTag;
+
+        const fullPackText =
+          '=== ' + cat.emoji + ' ' + cat.name.toUpperCase() + ' (' + plat.label + ' • ' + tone.label + ') ===\n\n' +
+          '--- 1. VIDEO SCRIPT & HOOK ---\n' + scriptText + '\n\n' +
+          '--- 2. AI VIDEO / B-ROLL VISUAL PROMPT ---\n' + visualPrompt + '\n\n' +
+          '--- 3. CAPTION & HASHTAGS ---\n' + captionText + '\n\n' +
+          '--- CREATOR TIP ---\n' + plat.formatTip;
+
+        const id = [cat.id, state.platform, state.tone, idx, twist].join('|');
+
+        return {
+          id: id,
+          categoryId: cat.id,
+          categoryName: cat.name,
+          categoryEmoji: cat.emoji,
+          platformLabel: plat.label,
+          toneLabel: tone.label,
+          variationNum: (idx % cat.hooks.length) + 1,
+          totalVariations: cat.hooks.length,
+          scriptText: scriptText,
+          visualPrompt: visualPrompt,
+          captionText: captionText,
+          formatTip: plat.formatTip,
+          fullPackText: fullPackText
+        };
+      }
+
+      function renderCategories() {
+        const q = state.searchQuery.trim().toLowerCase();
+        const filtered = CATEGORIES.filter(function (c) {
+          return c.name.toLowerCase().indexOf(q) !== -1;
+        });
+
+        if (filtered.length === 0) {
+          elCategoryGrid.innerHTML = '<p class="text-xs text-slate-500 py-1">No matching categories found.</p>';
+          return;
+        }
+
+        elCategoryGrid.innerHTML = filtered.map(function (cat) {
+          const active = cat.id === state.selectedCategoryId;
+          const baseCls = 'px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 border ';
+          const activeCls = active
+            ? 'bg-violet-600 text-white border-violet-500 shadow-md shadow-violet-600/20'
+            : 'bg-slate-950/70 text-slate-300 border-slate-800 hover:border-slate-600 hover:text-white';
+          return (
+            '<button type="button" data-cat-id="' + cat.id + '" class="' + baseCls + activeCls + '">' +
+              '<span>' + cat.emoji + '</span>' +
+              '<span>' + escapeHtml(cat.name) + '</span>' +
+            '</button>'
+          );
+        }).join('');
+      }
+
+      function isCurrentSaved() {
+        if (!state.currentPrompt) return false;
+        return state.saved.some(function (item) { return item.id === state.currentPrompt.id; });
+      }
+
+      function renderSaveButton() {
+        const saved = isCurrentSaved();
+        if (saved) {
+          elSaveHeartIcon.setAttribute('fill', 'currentColor');
+          elSaveHeartIcon.classList.remove('text-slate-400');
+          elSaveHeartIcon.classList.add('text-rose-400');
+          elSaveBtnText.textContent = 'Saved';
+          elBtnSavePrompt.classList.add('border-rose-500/40', 'bg-rose-500/10', 'text-rose-200');
+        } else {
+          elSaveHeartIcon.setAttribute('fill', 'none');
+          elSaveHeartIcon.classList.add('text-slate-400');
+          elSaveHeartIcon.classList.remove('text-rose-400');
+          elSaveBtnText.textContent = 'Save';
+          elBtnSavePrompt.classList.remove('border-rose-500/40', 'bg-rose-500/10', 'text-rose-200');
+        }
+        elSavedCountBadge.textContent = String(state.saved.length);
+      }
+
+      function renderOutput() {
+        const p = buildPromptData();
+        state.currentPrompt = p;
+
+        elOutCategoryPill.textContent = p.categoryEmoji + ' ' + p.categoryName;
+        elOutPlatformPill.textContent = p.platformLabel;
+        elOutTonePill.textContent = p.toneLabel;
+        elOutVariationPill.textContent = 'Variation ' + p.variationNum + ' of ' + p.totalVariations;
+
+        const cards = [];
+        if (state.mode === 'all' || state.mode === 'script') {
+          cards.push({
+            key: 'script',
+            title: '🎬 Video Script & Hook',
+            badge: 'Voiceover / On-Screen Text',
+            accent: 'border-violet-500/30',
+            text: p.scriptText,
+            fullSpan: state.mode === 'script'
+          });
+        }
+        if (state.mode === 'all' || state.mode === 'visual') {
+          cards.push({
+            key: 'visual',
+            title: '🎥 AI Video / B-Roll Prompt',
+            badge: 'For Sora, Runway, Veo & Filming',
+            accent: 'border-fuchsia-500/30',
+            text: p.visualPrompt,
+            fullSpan: state.mode === 'visual'
+          });
+        }
+        if (state.mode === 'all' || state.mode === 'caption') {
+          cards.push({
+            key: 'caption',
+            title: '✍️ Caption & Hashtags',
+            badge: 'Ready to Paste',
+            accent: 'border-emerald-500/30',
+            text: p.captionText,
+            fullSpan: true
+          });
+        }
+
+        elOutputBlocks.innerHTML = cards.map(function (c) {
+          const spanCls = c.fullSpan ? 'lg:col-span-2' : '';
+          return (
+            '<div class="rounded-xl bg-slate-950/80 border ' + c.accent + ' p-4 flex flex-col justify-between gap-3 ' + spanCls + '">' +
+              '<div class="space-y-2.5">' +
+                '<div class="flex items-center justify-between gap-2">' +
+                  '<div>' +
+                    '<h3 class="text-sm font-semibold text-white">' + c.title + '</h3>' +
+                    '<p class="text-[11px] text-slate-400">' + c.badge + '</p>' +
+                  '</div>' +
+                  '<button type="button" data-copy-key="' + c.key + '" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors shrink-0">' +
+                    'Copy' +
+                  '</button>' +
+                '</div>' +
+                '<pre class="whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-200 bg-slate-900/60 rounded-lg p-3 border border-slate-800/70">' + escapeHtml(c.text) + '</pre>' +
+              '</div>' +
+            '</div>'
+          );
+        }).join('') +
+        '<div class="lg:col-span-2 rounded-xl bg-amber-500/5 border border-amber-500/20 px-4 py-3 flex items-start gap-2.5">' +
+          '<span class="text-base leading-none mt-0.5">💡</span>' +
+          '<p class="text-xs sm:text-sm text-amber-200/90"><strong class="font-semibold text-amber-300">Creator Tip:</strong> ' + escapeHtml(p.formatTip) + '</p>' +
+        '</div>';
+
+        renderSaveButton();
+      }
+
+      function pushHistory(promptObj) {
+        if (!promptObj) return;
+        const existsIdx = state.history.findIndex(function (h) { return h.id === promptObj.id; });
+        if (existsIdx !== -1) state.history.splice(existsIdx, 1);
+        state.history.unshift(promptObj);
+        if (state.history.length > 8) state.history.pop();
+        renderHistory();
+      }
+
+      function renderHistory() {
+        if (state.history.length <= 1) {
+          elHistoryContainer.classList.add('hidden');
+          return;
+        }
+        elHistoryContainer.classList.remove('hidden');
+        elHistoryStrip.innerHTML = state.history.map(function (h, i) {
+          const isCurrent = state.currentPrompt && h.id === state.currentPrompt.id;
+          const cls = isCurrent
+            ? 'bg-violet-600/20 border-violet-500/50 text-violet-200'
+            : 'bg-slate-950/70 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700';
+          return (
+            '<button type="button" data-history-idx="' + i + '" class="px-2.5 py-1 rounded-lg border text-xs whitespace-nowrap transition-colors shrink-0 ' + cls + '">' +
+              h.categoryEmoji + ' ' + escapeHtml(h.categoryName) + ' • #' + h.variationNum +
+            '</button>'
+          );
+        }).join('');
+      }
+
+      function renderSavedList() {
+        elSavedCountBadge.textContent = String(state.saved.length);
+        if (state.saved.length === 0) {
+          elSavedList.innerHTML =
+            '<div class="md:col-span-2 rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 p-10 text-center space-y-2">' +
+              '<p class="text-2xl">🔖</p>' +
+              '<p class="text-sm font-medium text-slate-300">No saved prompts yet</p>' +
+              '<p class="text-xs text-slate-500">Click the Save button on any generated prompt to keep it here.</p>' +
+            '</div>';
+          return;
+        }
+
+        elSavedList.innerHTML = state.saved.map(function (item, idx) {
+          return (
+            '<div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-4 flex flex-col justify-between gap-3">' +
+              '<div class="space-y-2">' +
+                '<div class="flex items-center justify-between gap-2">' +
+                  '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-violet-500/15 text-violet-300 border border-violet-500/30">' +
+                    item.categoryEmoji + ' ' + escapeHtml(item.categoryName) +
+                  '</span>' +
+                  '<span class="text-[11px] text-slate-400">' + escapeHtml(item.platformLabel) + ' • ' + escapeHtml(item.toneLabel) + '</span>' +
+                '</div>' +
+                '<p class="text-sm text-slate-200 line-clamp-4 whitespace-pre-wrap">' + escapeHtml(item.scriptText) + '</p>' +
+              '</div>' +
+              '<div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/80">' +
+                '<button type="button" data-saved-copy="' + idx + '" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 transition-colors">' +
+                  'Copy Full Pack' +
+                '</button>' +
+                '<button type="button" data-saved-del="' + idx + '" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">' +
+                  'Remove' +
+                '</button>' +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+      }
+
+      function switchTab(tab) {
+        state.activeTab = tab;
+        if (tab === 'generator') {
+          elViewGenerator.classList.remove('hidden');
+          elViewSaved.classList.add('hidden');
+          elTabGenerator.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all bg-violet-600 text-white shadow-sm';
+          elTabSaved.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white flex items-center gap-1.5';
+        } else {
+          elViewGenerator.classList.add('hidden');
+          elViewSaved.classList.remove('hidden');
+          elTabSaved.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all bg-violet-600 text-white shadow-sm flex items-center gap-1.5';
+          elTabGenerator.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-300 hover:text-white';
+          renderSavedList();
+        }
+      }
+
+      function generateAndRecord() {
+        renderOutput();
+        pushHistory(state.currentPrompt);
+      }
+
+      // Event Listeners
+      elCategoryGrid.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-cat-id]');
+        if (!btn) return;
+        state.selectedCategoryId = btn.getAttribute('data-cat-id');
+        state.variationIndex = 0;
+        renderCategories();
+        generateAndRecord();
+      });
+
+      elCategorySearch.addEventListener('input', function (e) {
+        state.searchQuery = e.target.value;
+        renderCategories();
+      });
+
+      elSelectPlatform.addEventListener('change', function (e) {
+        state.platform = e.target.value;
+        generateAndRecord();
+      });
+
+      elSelectTone.addEventListener('change', function (e) {
+        state.tone = e.target.value;
+        generateAndRecord();
+      });
+
+      elSelectMode.addEventListener('change', function (e) {
+        state.mode = e.target.value;
+        renderOutput();
+      });
+
+      elCustomTwist.addEventListener('input', function (e) {
+        state.customTwist = e.target.value;
+      });
+
+      elBtnGenerate.addEventListener('click', function () {
+        generateAndRecord();
+        showToast('Prompt generated!', '⚡');
+      });
+
+      elBtnShuffle.addEventListener('click', function () {
+        state.variationIndex += 1;
+        generateAndRecord();
+      });
+
+      elBtnSurprise.addEventListener('click', function () {
+        const randomCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+        state.selectedCategoryId = randomCat.id;
+        state.variationIndex = Math.floor(Math.random() * randomCat.hooks.length);
+        state.searchQuery = '';
+        elCategorySearch.value = '';
+        renderCategories();
+        generateAndRecord();
+        showToast('Topic: ' + randomCat.name, randomCat.emoji);
+      });
+
+      elOutputBlocks.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-copy-key]');
+        if (!btn || !state.currentPrompt) return;
+        const key = btn.getAttribute('data-copy-key');
+        if (key === 'script') copyText(state.currentPrompt.scriptText, 'Video script');
+        else if (key === 'visual') copyText(state.currentPrompt.visualPrompt, 'Visual prompt');
+        else if (key === 'caption') copyText(state.currentPrompt.captionText, 'Caption & tags');
+      });
+
+      elBtnCopyAll.addEventListener('click', function () {
+        if (!state.currentPrompt) return;
+        copyText(state.currentPrompt.fullPackText, 'Full creator pack');
+      });
+
+      elBtnSavePrompt.addEventListener('click', function () {
+        if (!state.currentPrompt) return;
+        const idx = state.saved.findIndex(function (item) { return item.id === state.currentPrompt.id; });
+        if (idx !== -1) {
+          state.saved.splice(idx, 1);
+          showToast('Removed from saved', '🗑️');
+        } else {
+          state.saved.unshift(state.currentPrompt);
+          showToast('Saved to library!', '❤️');
+        }
+        persistSaved();
+        renderSaveButton();
+      });
+
+      elHistoryStrip.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-history-idx]');
+        if (!btn) return;
+        const idx = Number(btn.getAttribute('data-history-idx'));
+        const item = state.history[idx];
+        if (!item) return;
+        state.selectedCategoryId = item.categoryId;
+        state.variationIndex = item.variationNum - 1;
+        renderCategories();
+        renderOutput();
+        renderHistory();
+      });
+
+      elBtnClearHistory.addEventListener('click', function () {
+        state.history = state.currentPrompt ? [state.currentPrompt] : [];
+        renderHistory();
+      });
+
+      elTabGenerator.addEventListener('click', function () { switchTab('generator'); });
+      elTabSaved.addEventListener('click', function () { switchTab('saved'); });
+
+      elSavedList.addEventListener('click', function (e) {
+        const copyBtn = e.target.closest('[data-saved-copy]');
+        if (copyBtn) {
+          const idx = Number(copyBtn.getAttribute('data-saved-copy'));
+          if (state.saved[idx]) copyText(state.saved[idx].fullPackText, 'Saved prompt');
+          return;
+        }
+        const delBtn = e.target.closest('[data-saved-del]');
+        if (delBtn) {
+          const idx = Number(delBtn.getAttribute('data-saved-del'));
+          state.saved.splice(idx, 1);
+          persistSaved();
+          renderSavedList();
+          renderSaveButton();
+          showToast('Prompt removed', '🗑️');
+        }
+      });
+
+      elBtnClearSaved.addEventListener('click', function () {
+        if (state.saved.length === 0) return;
+        state.saved = [];
+        persistSaved();
+        renderSavedList();
+        renderSaveButton();
+        showToast('Saved list cleared', '🗑️');
+      });
+
+      elBtnExportSaved.addEventListener('click', function () {
+        if (state.saved.length === 0) {
+          showToast('No saved prompts to export', '⚠️');
+          return;
+        }
+        const content = state.saved.map(function (s) { return s.fullPackText; }).join('\n\n' + '='.repeat(48) + '\n\n');
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'creator-saved-prompts.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Exported .txt file!', '📥');
+      });
+
+      function loadPlan() {
+        try {
+          const raw = localStorage.getItem(PLAN_STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && parsed.status) {
+              state.plan = {
+                status: parsed.status,
+                trialDaysLeft: typeof parsed.trialDaysLeft === 'number' ? parsed.trialDaysLeft : 30,
+                paymentMethod: parsed.paymentMethod || 'upi'
+              };
+            }
+          }
+        } catch (e) {
+          // Ignore storage errors
+        }
+      }
+
+      function persistPlan() {
+        try {
+          localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(state.plan));
+        } catch (e) {
+          // Ignore storage errors
+        }
+      }
+
+      function renderPlanUI() {
+        const st = state.plan.status;
+        if (st === 'trial') {
+          elPlanPillIcon.textContent = '🎁';
+          elPlanPillText.textContent = '1st Month Free (' + state.plan.trialDaysLeft + 'd)';
+          elBtnPlanStatus.className = 'px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-emerald-500/35 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-colors flex items-center gap-1.5';
+
+          elPlanBanner.className = 'rounded-2xl bg-gradient-to-r from-violet-950/70 via-slate-900/90 to-fuchsia-950/60 border border-violet-500/30 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+          elBannerIcon.textContent = '🎁';
+          elBannerTitle.textContent = '1st Month Free Trial Active — ' + state.plan.trialDaysLeft + ' days remaining';
+          elBannerSubtitle.textContent = 'Full access is ₹0 for Month 1. From Month 2 onwards, subscription is ₹150/month.';
+          elBtnOpenPricing.textContent = 'Manage Plan';
+
+          elModalStatusBox.innerHTML = '<strong class="text-emerald-300">Active: 1st Month Free Trial</strong><br/>You have ' + state.plan.trialDaysLeft + ' days left at ₹0. Starting Month 2, your subscription will be ₹150/month.';
+          elBtnSubscribeNow.textContent = 'Activate ₹150/month After Trial';
+        } else if (st === 'expired') {
+          elPlanPillIcon.textContent = '🔒';
+          elPlanPillText.textContent = 'Trial Ended • ₹150/mo';
+          elBtnPlanStatus.className = 'px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 transition-colors flex items-center gap-1.5';
+
+          elPlanBanner.className = 'rounded-2xl bg-gradient-to-r from-amber-950/60 via-slate-900/90 to-rose-950/50 border border-amber-500/40 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+          elBannerIcon.textContent = '⏳';
+          elBannerTitle.textContent = 'Month 1 Free Trial Ended — Subscribe for ₹150/month';
+          elBannerSubtitle.textContent = 'Continue generating unlimited YouTube & Instagram prompts from Month 2 onwards for ₹150/month.';
+          elBtnOpenPricing.textContent = 'Subscribe ₹150/mo';
+
+          elModalStatusBox.innerHTML = '<strong class="text-amber-300">Month 1 Trial Ended</strong><br/>Subscribe now for <strong>₹150/month</strong> to keep unlimited access.';
+          elBtnSubscribeNow.textContent = 'Subscribe Now — ₹150/month';
+        } else {
+          elPlanPillIcon.textContent = '✨';
+          elPlanPillText.textContent = 'Pro • ₹150/mo';
+          elBtnPlanStatus.className = 'px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-violet-500/40 bg-violet-500/15 text-violet-300 hover:bg-violet-500/25 transition-colors flex items-center gap-1.5';
+
+          elPlanBanner.className = 'rounded-2xl bg-gradient-to-r from-emerald-950/50 via-slate-900/90 to-teal-950/40 border border-emerald-500/30 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+          elBannerIcon.textContent = '✨';
+          elBannerTitle.textContent = 'CreatorPass Active — ₹150/month';
+          elBannerSubtitle.textContent = 'Unlimited access unlocked across all 15 categories and platforms.';
+          elBtnOpenPricing.textContent = 'Plan Details';
+
+          elModalStatusBox.innerHTML = '<strong class="text-violet-300">CreatorPass Active (₹150/month)</strong><br/>Billed monthly via ' + escapeHtml(state.plan.paymentMethod.toUpperCase()) + '. Cancel anytime.';
+          elBtnSubscribeNow.textContent = 'Subscribed (₹150/month)';
+        }
+        elSelectPayment.value = state.plan.paymentMethod;
+      }
+
+      function openPlanModal() {
+        renderPlanUI();
+        elPlanModal.classList.remove('hidden');
+      }
+
+      function closePlanModal() {
+        elPlanModal.classList.add('hidden');
+      }
+
+      elBtnPlanStatus.addEventListener('click', openPlanModal);
+      elBtnOpenPricing.addEventListener('click', openPlanModal);
+      elBtnCloseModal.addEventListener('click', closePlanModal);
+      elPlanModal.addEventListener('click', function (e) {
+        if (e.target === elPlanModal) closePlanModal();
+      });
+
+      elSelectPayment.addEventListener('change', function (e) {
+        state.plan.paymentMethod = e.target.value;
+        persistPlan();
+      });
+
+      elBtnSubscribeNow.addEventListener('click', function () {
+        state.plan.status = 'subscribed';
+        state.plan.paymentMethod = elSelectPayment.value;
+        persistPlan();
+        renderPlanUI();
+        closePlanModal();
+        showToast('Subscribed at ₹150/month!', '✨');
+      });
+
+      elBtnSimulateTrialEnd.addEventListener('click', function () {
+        state.plan.status = 'expired';
+        state.plan.trialDaysLeft = 0;
+        persistPlan();
+        renderPlanUI();
+        showToast('Previewing Month 2 (Trial Ended)', '⏳');
+      });
+
+      elBtnResetTrial.addEventListener('click', function () {
+        state.plan.status = 'trial';
+        state.plan.trialDaysLeft = 30;
+        persistPlan();
+        renderPlanUI();
+        showToast('Reset to 1st Month Free Trial!', '🎁');
+      });
+
+      // Init
+      loadSaved();
+      loadPlan();
+      renderPlanUI();
+      renderCategories();
+      generateAndRecord();
+    })();
+  </script>
+</body>
+</html>
